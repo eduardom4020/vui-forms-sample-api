@@ -1,0 +1,18 @@
+{
+  "name": "vui-forms-sample-api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "swagger-i18n": "swagger-i18n-extension"
+  },
+  "dependencies": {
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "swagger-i18n-extension": "^1.0.1",
+    "swagger-jsdoc": "^4.3.1",
+    "swagger-ui-express": "^4.1.4"
+  }
+}
