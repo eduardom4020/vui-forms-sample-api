@@ -1,18 +1,18 @@
-const createError = require('http-errors');
-const express = require('express');
-const logger = require('morgan');
+var createError = require('http-errors');
+var express = require('express');
+var logger = require('morgan');
 
-const largeFormRouter = require('./routes/large-form');
+var largeFormRouter = require('./routes/forms');
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerJSDoc = require('swagger-jsdoc');
-const swaggerI18N = require('swagger-i18n-extension');
+var swaggerUi = require('swagger-ui-express');
+var swaggerJSDoc = require('swagger-jsdoc');
+var swaggerI18N = require('swagger-i18n-extension');
 
-const swaggerOptions = {
+var swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Hello World',
+      title: 'Title on english',
       'x-title-i18n': {
         eng: 'Title on english',
         por: 'Titulo em Português'
@@ -20,10 +20,10 @@ const swaggerOptions = {
       version: '1.0.0',
     },
   },
-  apis: ['./routes/**/*.js'],
+  apis: ['./routes/**/*.js', './entities/**/*.js'],
 };
 
-const app = express();
+var app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -32,18 +32,18 @@ app.set('etag', false);
 
 app.use('/large-form', largeFormRouter);
 
-const getLanguageFromRouteMiddleware = (req, res, next) => {
+var getLanguageFromRouteMiddleware = (req, res, next) => {
 
-  const { lang='por' } = req.params;  
+  var { lang='por' } = req.params;  
   res.locals = {...res.locals, lang};
 
   next();
 }
 
-const i18nSwaggerMiddleware = (req, res, next) => {
+var i18nSwaggerMiddleware = (req, res, next) => {
 
-  const swaggerSpec = swaggerJSDoc(swaggerOptions);
-  const translatedDoc = swaggerI18N.translate(swaggerSpec, res.locals.lang);
+  var swaggerSpec = swaggerJSDoc(swaggerOptions);
+  var translatedDoc = swaggerI18N.translate(swaggerSpec, res.locals.lang);
   
   res.locals = {...res.locals, translatedDoc};
 
