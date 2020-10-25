@@ -37,10 +37,15 @@ jobs:
         run: docker save vui-forms/sample-api:latest > vui-forms_sample-api.tar
       
       - name: Saving key string into file
-        run: touch key.pem && echo ${{ secrets.SSH_KEY }} >> key.pem && chmod 400 key.pem
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: touch key.pem && echo "$SSH_KEY" >> key.pem && chmod 400 key.pem
       
       - name: Send image using ftp
-        run: scp -i key.pem vui-forms_sample-api.tar ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/ubuntu
+        env:
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: scp -i key.pem vui-forms_sample-api.tar "$SSH_USERNAME"@"$SSH_HOST":/home/ubuntu
 
       # SSH to specific AWS EC2 set on secrets
       - name: SSH to EC2
