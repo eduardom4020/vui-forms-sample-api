@@ -45,7 +45,7 @@ jobs:
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
-        run: scp -i key.pem vui-forms_sample-api.tar "$SSH_USERNAME"@"$SSH_HOST":/home/ubuntu
+        run: scp -i key.pem vui-forms_sample-api.tar "${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}"
 
       # SSH to specific AWS EC2 set on secrets
       - name: SSH to EC2
