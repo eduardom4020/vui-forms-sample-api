@@ -41,6 +41,16 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
         run: touch key.pem && echo "$SSH_KEY" >> key.pem && chmod 400 key.pem
       
+      - name: Cleanning EC2 With SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            [ -e vui-forms_sample-api.tar ] && rm -f vui-forms_sample-api.tar
+      
       - name: Send image using ftp
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -56,5 +66,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            docker --version
-            ls -la
+            docker stop vui-forms_sample-api || true && docker rm vui-forms_sample-api || true
+            docker load < vui-forms_sample-api.tar
+            docker run -d -p 3000:3000 --name vui-forms_sample-api vui-forms/sample-api:latest
