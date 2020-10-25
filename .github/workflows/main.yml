@@ -39,14 +39,13 @@ jobs:
       - name: Saving key string into file
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-        run: touch key.pem && echo "$SSH_KEY" >> key.pem && chmod 400 key.pem && ssh-keygen -R "$SSH_HOST"
+        run: touch key.pem && echo "$SSH_KEY" >> key.pem && chmod 400 key.pem && ssh-keygen
       
       - name: Send image using ftp
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
-        run: scp -i key.pem vui-forms_sample-api.tar "${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}"
+        run: scp -o "StrictHostKeyChecking no" -i key.pem vui-forms_sample-api.tar "${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}"
 
       # SSH to specific AWS EC2 set on secrets
       - name: SSH to EC2
