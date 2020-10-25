@@ -56,6 +56,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            docker stop vui-forms_sample-api || true && docker rm vui-forms_sample-api || true
-            docker load < vui-forms_sample-api.tar
-            docker run -d -p 3000:3000 --name vui-forms_sample-api vui-forms/sample-api:latest
+            sudo docker stop vui-forms_sample-api || true && docker rm vui-forms_sample-api || true
+            sudo docker load < vui-forms_sample-api.tar
+            sudo docker run -d -p 3000:3000 --name vui-forms_sample-api vui-forms/sample-api:latest
+            rm -f vui-forms_sample-api.tar
