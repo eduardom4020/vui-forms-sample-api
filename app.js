@@ -2,11 +2,13 @@ var createError = require('http-errors');
 var express = require('express');
 var logger = require('morgan');
 
-var largeFormRouter = require('./routes/forms');
+var largeFormRouter = require('./routes/largeform');
 
 var swaggerUi = require('swagger-ui-express');
 var swaggerJSDoc = require('swagger-jsdoc');
 var swaggerI18N = require('swagger-i18n-extension');
+
+var sqlite3 = require('sqlite3').verbose();
 
 var swaggerOptions = {
   definition: {
@@ -29,6 +31,41 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.set('etag', false);
+
+app.use((req, res, next) => {
+  var db = new sqlite3.Database('./db/sample-app.db', (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+
+    console.log('Connected to the database.');
+  });
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS large_form (
+      name TEXT NOT NULL,
+      phone TEXT,
+      last_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      zip_code TEXT,
+      instagram TEXT,
+      github TEXT,
+      identity_number TEXT,
+      tax_id TEXT UNIQUE,
+      gender TEXT,
+      age TEXT,
+      job TEXT,
+      company TEXT,
+      state TEXT,
+      city TEXT,
+      PRIMARY KEY (email)
+    );
+  `);
+
+  req.app.set('db', db);
+
+  next();
+})
 
 app.use('/large-form', largeFormRouter);
 
@@ -77,7 +114,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.send(err.message);
 });
 
 module.exports = app;

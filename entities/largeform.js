@@ -98,7 +98,7 @@
  *                          por: Cidade
  *                  
  */
-export class LargeForm {
+class LargeForm {
     
     constructor(
         name,
@@ -133,4 +133,133 @@ export class LargeForm {
         this.state = state;
         this.city = city;
     }
+
+    createCommand() {
+        var query = `
+            INSERT INTO large_form (
+                name,
+                phone,
+                last_name,
+                email,
+                zip_code,
+                instagram,
+                github,
+                identity_number,
+                tax_id,
+                gender,
+                age,
+                job,
+                company,
+                state,
+                city
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        var values = [
+            this.name,
+            this.phone,
+            this.lastName,
+            this.email,
+            this.zipCode,
+            this.instagram,
+            this.github,
+            this.identityNumber,
+            this.taxId,
+            this.gender,
+            this.age,
+            this.job,
+            this.company,
+            this.state,
+            this.city
+        ];
+
+        return [query, values];
+    }
+
+    retireveCommand() {
+        var query = `
+            SELECT *
+            FROM large_form
+            WHERE email = ?
+        `;
+
+        var values = [this.email];
+
+        return [query, values];
+    }
+
+    deleteCommand() {
+        var query = `
+            DELETE FROM large_form
+            WHERE email = ?
+        `;
+
+        var values = [this.email];
+
+        return [query, values];
+    }
+
+    updateCommand() {
+        var query = `
+            UPDATE large_form
+            SET name = ?,
+                phone = ?,
+                last_name = ?,
+                zip_code = ?,
+                instagram = ?,
+                github = ?,
+                identity_number = ?,
+                tax_id = ?,
+                gender = ?,
+                age = ?,
+                job = ?,
+                company = ?,
+                state = ?,
+                city = ?
+            WHERE email = ?
+        `;
+
+        var values = [
+            this.name,
+            this.phone,
+            this.lastName,
+            this.zipCode,
+            this.instagram,
+            this.github,
+            this.identityNumber,
+            this.taxId,
+            this.gender,
+            this.age,
+            this.job,
+            this.company,
+            this.state,
+            this.city,
+            this.email
+        ];
+
+        return [query, values];
+    }
 }
+
+function CreateLargeForm(obj) {
+    return new LargeForm(
+        obj.name,
+        obj.phone,
+        obj.lastName,
+        obj.email,
+        obj.zipCode,
+        obj.instagram,
+        obj.github,
+        obj.identityNumber,
+        obj.taxId,
+        obj.gender,
+        obj.age,
+        obj.job,
+        obj.company,
+        obj.state,
+        obj.city
+    );
+}
+
+module.exports = { CreateLargeForm };
