@@ -30,7 +30,7 @@ var router = express.Router();
  */
 router.post('/', function(req, res, next) {
   var db = req.app.get('db');
-
+  console.log('On post large-form', req.body);
   var form = CreateLargeForm(req.body);
   var [query, values] = form.createCommand();
 
