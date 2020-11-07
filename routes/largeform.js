@@ -27,6 +27,11 @@ var router = express.Router();
  *         x-description-i18n: 
  *            eng: Form saved successfully.
  *            por: Formulário salvo com sucesso.
+ *       500:
+ *         description: Not treated error.
+ *         x-description-i18n: 
+ *            eng: Not treated error.
+ *            por: Erro não tratado.
  */
 router.post('/', function(req, res, next) {
   var db = req.app.get('db');
@@ -73,6 +78,11 @@ router.post('/', function(req, res, next) {
  *         x-description-i18n: 
  *            eng: Form saved successfully.
  *            por: Formulário salvo com sucesso.
+ *       500:
+ *         description: Not treated error.
+ *         x-description-i18n: 
+ *            eng: Not treated error.
+ *            por: Erro não tratado.
  */
 router.put('/', function(req, res, next) {
   if(!req.body.email) return res.status(400).send({message: 'You should inform an email.'});
@@ -126,6 +136,16 @@ router.put('/', function(req, res, next) {
  *         x-description-i18n: 
  *            eng: Form that matches email condition.
  *            por: Formulário que corresponde ao email informado.
+ *       500:
+ *         description: Not treated error.
+ *         x-description-i18n: 
+ *            eng: Not treated error.
+ *            por: Erro não tratado.
+ *       204:
+ *         description: Entry not found.
+ *         x-description-i18n: 
+ *            eng: Entry not found.
+ *            por: Registro não encontrado.
  */
 router.get('/:email', function(req, res, next) {
   var db = req.app.get('db');
@@ -183,6 +203,11 @@ router.get('/:email', function(req, res, next) {
  *         x-description-i18n: 
  *            eng: Deletion successfully.
  *            por: Deleção realizada com sucesso.
+ *       500:
+ *         description: Not treated error.
+ *         x-description-i18n: 
+ *            eng: Not treated error.
+ *            por: Erro não tratado.
  */
 router.delete('/:email', function(req, res, next) {
   var db = req.app.get('db');

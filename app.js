@@ -14,10 +14,10 @@ var swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Title on english',
+      title: 'Sample Forms API',
       'x-title-i18n': {
-        eng: 'Title on english',
-        por: 'Titulo em Português'
+        eng: 'Sample Forms API',
+        por: 'Exemplo de API de Formulários'
       },
       version: '1.0.0',
     },

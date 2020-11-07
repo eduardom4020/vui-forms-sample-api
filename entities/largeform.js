@@ -4,9 +4,6 @@
  *      schemas:
  *          LargeForm:
  *              title: LargeForm
- *              x-title-i18n:
- *                  eng: Large Form
- *                  por: Formulário Extenso
  *              type: object
  *              properties:
  *                  name:
