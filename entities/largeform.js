@@ -179,7 +179,22 @@ class LargeForm {
 
     retireveCommand() {
         var query = `
-            SELECT *
+            SELECT
+                name,
+                phone,
+                last_name AS lastName,
+                email,
+                zip_code,
+                instagram,
+                github,
+                identity_number AS identityNumber,
+                tax_id AS taxId,
+                gender,
+                age,
+                job,
+                company,
+                state,
+                city
             FROM large_form
             WHERE email = ?
         `;
