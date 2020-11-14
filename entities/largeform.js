@@ -1,3 +1,34 @@
+function _listQuery() {
+    var query = `
+        SELECT
+            name,
+            phone,
+            last_name AS lastName,
+            email,
+            zip_code,
+            instagram,
+            github,
+            identity_number AS identityNumber,
+            tax_id AS taxId,
+            gender,
+            age,
+            job,
+            company,
+            state,
+            city
+        FROM large_form
+    `;
+
+    return query;
+}
+
+function largeFormListCommand() {
+    var query = _listQuery();
+    var values = [];
+
+    return [query, values];
+}
+
 /**
  *  @swagger
  *  components:
@@ -175,24 +206,9 @@ class LargeForm {
     }
 
     retireveCommand() {
+        var listQuery = _listQuery();
         var query = `
-            SELECT
-                name,
-                phone,
-                last_name AS lastName,
-                email,
-                zip_code,
-                instagram,
-                github,
-                identity_number AS identityNumber,
-                tax_id AS taxId,
-                gender,
-                age,
-                job,
-                company,
-                state,
-                city
-            FROM large_form
+            ${listQuery}\n
             WHERE email = ?
         `;
 
@@ -274,4 +290,4 @@ function CreateLargeForm(obj) {
     );
 }
 
-module.exports = { CreateLargeForm };
+module.exports = { CreateLargeForm, largeFormListCommand };

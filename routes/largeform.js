@@ -1,4 +1,4 @@
-var { CreateLargeForm } = require('../entities/largeform');
+var { CreateLargeForm, largeFormListCommand } = require('../entities/largeform');
 
 var express = require('express');
 var router = express.Router();
@@ -35,7 +35,7 @@ var router = express.Router();
  */
 router.post('/', function(req, res, next) {
   var db = req.app.get('db');
-  console.log('On post large-form', req.body);
+  
   var form = CreateLargeForm(req.body);
   var [query, values] = form.createCommand();
 
@@ -105,6 +105,60 @@ router.put('/', function(req, res, next) {
 
   db.close();
 
+});
+
+/**
+ * @swagger
+ *
+ * /large-form:
+ *   get:
+ *     tags:
+*        - Forms
+ *     description: Get all saved data on database.
+ *     x-description-i18n:
+ *        eng: Get all saved data on database.
+ *        por: Recupera todos os dados salvos no banco de dados.
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Forms saved in database.
+ *         x-description-i18n: 
+ *            eng: Forms saved in database.
+ *            por: Formulários salvo no banco.
+ *       500:
+ *         description: Not treated error.
+ *         x-description-i18n: 
+ *            eng: Not treated error.
+ *            por: Erro não tratado.
+ *       204:
+ *         description: Entry not found.
+ *         x-description-i18n: 
+ *            eng: Entry not found.
+ *            por: Registros não encontrados.
+ */
+router.get('/', function(req, res, next) {
+  var db = req.app.get('db');
+
+  var [query, values] = largeFormListCommand();
+
+  db.all(query, values, function(err, rows) {
+    if (err) {
+      console.log(err.message);
+      res.status(500).send({message: err.message});
+    }
+    
+    if(rows && rows.length > 0) {
+      var result = rows.map(row => CreateLargeForm(row));
+      res.status(200).send(result);
+    }
+    else {
+      res.status(204).send({message: 'Entries not found'});
+    }
+    
+  });
+
+  db.close();
 });
 
 /**
