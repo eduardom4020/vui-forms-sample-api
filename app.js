@@ -32,6 +32,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.set('etag', false);
 
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin');
+  next();
+});
+
 app.use((req, res, next) => {
   var db = new sqlite3.Database('./db/sample-app.db', (err) => {
     if (err) {
