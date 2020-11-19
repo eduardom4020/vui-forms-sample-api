@@ -124,6 +124,30 @@ function largeFormListCommand() {
  *                     x-description-i18n:
  *                          eng: City
  *                          por: Cidade
+ *                  address:
+ *                     type: string
+ *                     description: Address
+ *                     x-description-i18n:
+ *                          eng: Address
+ *                          por: Logradouro
+ *                  number:
+ *                     type: string
+ *                     description: Number
+ *                     x-description-i18n:
+ *                          eng: Number
+ *                          por: Número
+ *                  neighborhood:
+ *                     type: string
+ *                     description: Neighborhood
+ *                     x-description-i18n:
+ *                          eng: Neighborhood
+ *                          por: Bairro
+ *                  complement:
+ *                     type: string
+ *                     description: Complement
+ *                     x-description-i18n:
+ *                          eng: Complement
+ *                          por: Complemento
  *                  
  */
 class LargeForm {
@@ -143,7 +167,11 @@ class LargeForm {
         job,
         company,
         state,
-        city
+        city,
+        address,
+        number,
+        neighborhood,
+        complement
     ) {
         this.name = name;
         this.phone = phone;
@@ -160,6 +188,10 @@ class LargeForm {
         this.company = company;
         this.state = state;
         this.city = city;
+        this.address = address;
+        this.number = number;
+        this.neighborhood = neighborhood;
+        this.complement = complement;
     }
 
     createCommand() {
@@ -179,9 +211,13 @@ class LargeForm {
                 job,
                 company,
                 state,
-                city
+                city,
+                address,
+                number,
+                neighborhood,
+                complement
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         var values = [
@@ -199,7 +235,11 @@ class LargeForm {
             this.job,
             this.company,
             this.state,
-            this.city
+            this.city,
+            this.address,
+            this.number,
+            this.neighborhood,
+            this.complement
         ];
 
         return [query, values];
@@ -244,7 +284,11 @@ class LargeForm {
                 job = ?,
                 company = ?,
                 state = ?,
-                city = ?
+                city = ?,
+                address = ?,
+                number = ?,
+                neighborhood = ?,
+                complement = ?
             WHERE email = ?
         `;
 
@@ -263,6 +307,10 @@ class LargeForm {
             this.company,
             this.state,
             this.city,
+            this.address,
+            this.number,
+            this.neighborhood,
+            this.complement,
             this.email
         ];
 
@@ -286,7 +334,11 @@ function CreateLargeForm(obj) {
         obj.job,
         obj.company,
         obj.state,
-        obj.city
+        obj.city,
+        obj.address,
+        obj.number,
+        obj.neighborhood,
+        obj.complement
     );
 }
 

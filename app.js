@@ -64,6 +64,10 @@ app.use((req, res, next) => {
       company TEXT,
       state TEXT,
       city TEXT,
+      address TEXT,
+      number TEXT,
+      neighborhood TEXT,
+      complement TEXT,
       PRIMARY KEY (email)
     );
   `);
