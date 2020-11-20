@@ -15,7 +15,11 @@ function _listQuery() {
             job,
             company,
             state,
-            city
+            city,
+            address,
+            number,
+            neighborhood,
+            complement
         FROM large_form
     `;
 
