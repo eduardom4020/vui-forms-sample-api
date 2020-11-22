@@ -1,4 +1,6 @@
-var { CreateLargeForm, largeFormListCommand } = require('../entities/largeform');
+var { CreateLargeForm } = require('../entities/largeform');
+var { DUPLICATE_EMAIL_ERROR_RESPONSE, DUPLICATE_EMAIL_ERROR_MATCH } = require('../constants');
+var { listAllForms } = require('../functions/largeformfunctions');
 
 var express = require('express');
 var router = express.Router();
@@ -41,17 +43,32 @@ router.post('/', function(req, res, next) {
 
   db.run(query, values, function(err) {
     if (err) {
-      console.log(err.message);
-      res.status(500).send({message: err.message});
+      var errorMessage = err.message;
+      var isEmailDuplicated = errorMessage.match(new RegExp(DUPLICATE_EMAIL_ERROR_MATCH, 'g'));
+
+      res.status(500).send({message: isEmailDuplicated ? DUPLICATE_EMAIL_ERROR_RESPONSE : errorMessage});
+    } else {
+      var io = req.app.get('io');
+
+      listAllForms({
+        db,
+        onSuccess: result => {
+          io.emit('list', result);
+          res.status(200).send({message: 'Saved data!'});
+          db.close();
+        },
+        onFailure: error => {
+          console.log(error)
+          db.close();
+        },
+        onEmptyList: () => {
+          io.emit('list', []);
+          res.status(422).send({message: 'Unable to insert data!'});
+          db.close();
+        }
+      });
     }
-    
-    console.log(`A row has been inserted with rowid ${this.lastID}`);
-
-    res.status(200).send({message: 'Saved data!'});
   });
-
-  db.close();
-
 });
 
 /**
@@ -140,25 +157,21 @@ router.put('/', function(req, res, next) {
 router.get('/', function(req, res, next) {
   var db = req.app.get('db');
 
-  var [query, values] = largeFormListCommand();
-
-  db.all(query, values, function(err, rows) {
-    if (err) {
-      console.log(err.message);
-      res.status(500).send({message: err.message});
-    }
-    
-    if(rows && rows.length > 0) {
-      var result = rows.map(row => CreateLargeForm(row));
+  listAllForms({
+    db,
+    onSuccess: result => {
       res.status(200).send(result);
+      db.close();
+    },
+    onFailure: error => {
+      res.status(500).send({message: error.message});
+      db.close();
+    },
+    onEmptyList: message => {
+      res.status(204).send({message});
+      db.close();
     }
-    else {
-      res.status(204).send({message: 'Entries not found'});
-    }
-    
   });
-
-  db.close();
 });
 
 /**
@@ -273,15 +286,30 @@ router.delete('/:email', function(req, res, next) {
 
   db.run(query, values, function(err) {
     if (err) {
-      console.log(err.message);
+      console.log('on error', err.message);
       res.status(500).send({message: err.message});
+    } else {
+      var io = req.app.get('io');
+      
+      listAllForms({
+        db,
+        onSuccess: result => {
+          io.emit('list', result);
+          res.status(200).send({message: 'Deleted Successfully!'});
+          db.close();
+        },
+        onFailure: error => {
+          console.log('on failure', error)
+          db.close();
+        },
+        onEmptyList: message => {
+          io.emit('list', []);
+          res.status(200).send({message: 'Deleted Successfully!'});
+          db.close();
+        }
+      });
     }
-    
-    res.status(200).send({message: 'Deleted Successfully!'});
-    
   });
-
-  db.close();
 });
 
 module.exports = router;

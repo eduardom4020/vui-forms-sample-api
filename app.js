@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 var createError = require('http-errors');
 var express = require('express');
 var logger = require('morgan');
@@ -9,6 +11,8 @@ var swaggerJSDoc = require('swagger-jsdoc');
 var swaggerI18N = require('swagger-i18n-extension');
 
 var sqlite3 = require('sqlite3').verbose();
+
+var { listAllForms } = require('./functions/largeformfunctions');
 
 var swaggerOptions = {
   definition: {
@@ -38,13 +42,11 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use((req, res, next) => {
+function _startDB() {
   var db = new sqlite3.Database('./db/sample-app.db', (err) => {
     if (err) {
       console.error(err.message);
     }
-
-    console.log('Connected to the database.');
   });
 
   db.run(`
@@ -72,12 +74,15 @@ app.use((req, res, next) => {
     );
   `);
 
-  req.app.set('db', db);
+  return db;
+}
 
+app.use((req, res, next) => {
+  var db = _startDB();  
+  req.app.set('db', db);
+  
   next();
 })
-
-app.use('/large-form', largeFormRouter);
 
 var getLanguageFromRouteMiddleware = (req, res, next) => {
 
@@ -94,7 +99,7 @@ var i18nSwaggerMiddleware = (req, res, next) => {
   
   res.locals = {...res.locals, translatedDoc};
 
-  next()
+  next();
 }
 
 app.use('/api-docs/:lang/swagger.json',
@@ -110,6 +115,69 @@ app.get(
   i18nSwaggerMiddleware,
   (req, res, next) => swaggerUi.setup(res.locals.translatedDoc)(req, res, next)
 );
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    return val;
+  }
+
+  if (port >= 0) {
+    return port;
+  }
+
+  return false;
+}
+
+var http = require('http');
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+var server = http.createServer(app);
+
+server.listen(port);
+
+var socketIO = require('socket.io');
+var io = socketIO(server, {
+  pingTimeout: 1000,
+  cors: {
+    origin: '*',
+  }
+});
+
+io.on('connection', (socket) => {
+  console.log('a user connected');
+
+  var db = _startDB();
+  listAllForms({
+    db,
+    onSuccess: result => {
+      socket.emit('list', result);
+      db.close();
+    },
+    onFailure: error => {
+      console.log(error)
+      db.close();
+    },
+    onEmptyList: () => {
+      socket.emit('list', []);
+      db.close();
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+});
+
+app.use(function(req, res, next) {
+  req.app.set('io', io);
+  next();
+});
+
+app.use('/large-form', largeFormRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -127,4 +195,4 @@ app.use(function(err, req, res, next) {
   res.send(err.message);
 });
 
-module.exports = app;
+module.exports = {app, server};
